@@ -1,8 +1,12 @@
 package api
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"store-dashboard-service/api/route"
 
-func NewServer() *fiber.App {
+	"github.com/gofiber/fiber/v2"
+)
+
+func NewServer(userRoute *route.UserRoute) *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName: "store-dashboard-service",
 	})
@@ -10,6 +14,9 @@ func NewServer() *fiber.App {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello World")
 	})
+
+	userRouter := app.Group("/users")
+	userRoute.Init(userRouter)
 
 	return app
 }
