@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"store-dashboard-service/model"
 	"store-dashboard-service/repository"
+	"store-dashboard-service/util"
 	"store-dashboard-service/util/exception"
 
 	"golang.org/x/crypto/bcrypt"
@@ -36,8 +37,14 @@ func (u *userService) Login(payload *model.LoginRequest) (model.Token, error) {
 
 	fmt.Println(user)
 
-	// TODO replace with real jwt token
-	token.AccessToken = "access token"
-	token.RefreshToken = "refresh token"
+	accessToken, err := util.GenerateAccessToken(&model.PayloadAccessToken{ID: user.ID, Email: user.Email, Role: user.Role})
+	refreshToken, err := util.GenerateRefreshToken(&model.PayloadRefreshToken{ID: user.ID, Email: user.Email})
+	if err != nil {
+		return token, err
+	}
+
+	token.AccessToken = accessToken
+	token.RefreshToken = refreshToken
+
 	return token, nil
 }

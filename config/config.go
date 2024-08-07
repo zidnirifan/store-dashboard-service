@@ -6,8 +6,10 @@ import (
 )
 
 type Config struct {
-	Port       int
-	PostgresDB DBConfig
+	Port            int
+	PostgresDB      DBConfig
+	AccessTokenKey  string
+	RefreshTokenKey string
 }
 
 type DBConfig struct {
@@ -38,6 +40,8 @@ func init() {
 			DBName:   viper.GetString("POSTGRES_DBNAME"),
 			SSLMode:  viper.GetString("POSTGRES_SSL_MODE"),
 		},
+		AccessTokenKey:  viper.GetString("ACCESS_TOKEN_KEY"),
+		RefreshTokenKey: viper.GetString("REFRESH_TOKEN_KEY"),
 	}
 }
 

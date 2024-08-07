@@ -23,6 +23,17 @@ type LoginRequest struct {
 }
 
 type Token struct {
-	AccessToken  string
-	RefreshToken string
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
+type PayloadAccessToken struct {
+	ID    string
+	Email string
+	Role  string
+}
+
+type PayloadRefreshToken struct {
+	ID    string
+	Email string
 }
