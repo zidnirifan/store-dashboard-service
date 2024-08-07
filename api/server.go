@@ -1,6 +1,7 @@
 package api
 
 import (
+	"store-dashboard-service/api/handler"
 	"store-dashboard-service/api/route"
 
 	"github.com/gofiber/fiber/v2"
@@ -8,7 +9,8 @@ import (
 
 func NewServer(userRoute *route.UserRoute) *fiber.App {
 	app := fiber.New(fiber.Config{
-		AppName: "store-dashboard-service",
+		AppName:      "store-dashboard-service",
+		ErrorHandler: handler.ErrorHandler,
 	})
 
 	app.Get("/", func(c *fiber.Ctx) error {

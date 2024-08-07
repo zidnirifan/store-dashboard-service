@@ -1,9 +1,11 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"store-dashboard-service/model"
 	"store-dashboard-service/repository"
+	"store-dashboard-service/util/exception"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,12 +26,12 @@ func (u *userService) Login(payload *model.LoginRequest) (model.Token, error) {
 	token := model.Token{}
 	user, err := u.repository.GetByEmail(payload.Email)
 	if err != nil {
-		return token, err
+		return token, &exception.CustomError{StatusCode: 404, Err: errors.New("user not found")}
 	}
 
 	passwordMatchErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if passwordMatchErr != nil {
-		return token, err
+		return token, &exception.CustomError{StatusCode: 403, Err: errors.New("wrong password")}
 	}
 
 	fmt.Println(user)
