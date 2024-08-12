@@ -10,7 +10,6 @@ import (
 
 func OpenConnection() *gorm.DB {
 	dbConfig := config.GetConfig().PostgresDB
-	fmt.Println(dbConfig)
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		dbConfig.Host,
