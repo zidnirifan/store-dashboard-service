@@ -1,11 +1,15 @@
 package config
 
 import (
+	"os"
+	"regexp"
+
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
+	ProjectName     string
 	Port            int
 	PostgresDB      DBConfig
 	AccessTokenKey  string
@@ -24,14 +28,21 @@ type DBConfig struct {
 var config Config
 
 func init() {
+	projectName := "store-dashboard-service"
+
 	err := godotenv.Load()
 	if err != nil {
-		panic(err)
+		// load env for testing
+		re := regexp.MustCompile(`^(.*` + projectName + `)`)
+		cwd, _ := os.Getwd()
+		rootPath := re.Find([]byte(cwd))
+		godotenv.Load(string(rootPath) + "/.env.test")
 	}
 	viper.AutomaticEnv()
 
 	config = Config{
-		Port: viper.GetInt("PORT"),
+		ProjectName: projectName,
+		Port:        viper.GetInt("PORT"),
 		PostgresDB: DBConfig{
 			Host:     viper.GetString("POSTGRES_HOST"),
 			Port:     viper.GetString("POSTGRES_PORT"),

@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 type User struct {
 	ID        string
@@ -31,9 +35,11 @@ type PayloadAccessToken struct {
 	ID    string
 	Email string
 	Role  string
+	jwt.RegisteredClaims
 }
 
 type PayloadRefreshToken struct {
 	ID    string
 	Email string
+	jwt.RegisteredClaims
 }
