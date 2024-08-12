@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"store-dashboard-service/model"
 	"store-dashboard-service/repository"
 	"store-dashboard-service/util"
@@ -34,8 +33,6 @@ func (u *userService) Login(payload *model.LoginRequest) (model.Token, error) {
 	if passwordMatchErr != nil {
 		return token, &exception.CustomError{StatusCode: 403, Err: errors.New("wrong password")}
 	}
-
-	fmt.Println(user)
 
 	accessToken, err := util.GenerateAccessToken(&model.PayloadAccessToken{ID: user.ID, Email: user.Email, Role: user.Role})
 	refreshToken, err := util.GenerateRefreshToken(&model.PayloadRefreshToken{ID: user.ID, Email: user.Email})
