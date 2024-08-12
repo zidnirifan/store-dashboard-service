@@ -29,6 +29,7 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 
 	return c.JSON(model.Response{
 		Message: "login success",
+		Success: true,
 		Data:    token,
 	})
 }

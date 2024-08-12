@@ -14,11 +14,13 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 		c.Status(re.StatusCode)
 		return c.JSON(model.Response{
 			Message: re.Error(),
+			Success: false,
 		})
 	}
 
 	c.Status(http.StatusInternalServerError)
-	return c.JSON(fiber.Map{
-		"message": err.Error(),
+	return c.JSON(model.Response{
+		Message: err.Error(),
+		Success: false,
 	})
 }
