@@ -12,6 +12,7 @@ type userRepository struct {
 
 type UserRepository interface {
 	GetByEmail(email string) (model.User, error)
+	CreateUser(user *model.User) error
 }
 
 func NewUserRepository(db *gorm.DB) *userRepository {
@@ -24,4 +25,8 @@ func (u *userRepository) GetByEmail(email string) (model.User, error) {
 	err := u.db.Take(&user, "email = ?", email).Error
 
 	return user, err
+}
+
+func (u *userRepository) CreateUser(user *model.User) error {
+	return u.db.Create(&user).Error
 }

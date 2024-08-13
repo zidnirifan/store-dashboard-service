@@ -33,3 +33,22 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 		Data:    token,
 	})
 }
+
+func (handler *UserHandler) Register(c *fiber.Ctx) error {
+	body := &model.RegisterRequest{}
+	err := c.BodyParser(body)
+	if err != nil {
+		return err
+	}
+
+	res, err := handler.userService.Register(body)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(model.Response{
+		Message: "login success",
+		Success: true,
+		Data:    res,
+	})
+}

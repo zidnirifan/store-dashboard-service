@@ -13,6 +13,24 @@ type UserRepository struct {
 	mock.Mock
 }
 
+// CreateUser provides a mock function with given fields: user
+func (_m *UserRepository) CreateUser(user *model.User) error {
+	ret := _m.Called(user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateUser")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*model.User) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetByEmail provides a mock function with given fields: email
 func (_m *UserRepository) GetByEmail(email string) (model.User, error) {
 	ret := _m.Called(email)

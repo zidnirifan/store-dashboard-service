@@ -8,6 +8,7 @@ import (
 	"store-dashboard-service/util/exception"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,6 +19,7 @@ type userService struct {
 
 type UserService interface {
 	Login(payload *model.LoginRequest) (model.Token, error)
+	Register(payload *model.RegisterRequest) (model.RegisteredUser, error)
 }
 
 func NewUserService(repository repository.UserRepository, validate *validator.Validate) *userService {
@@ -52,4 +54,61 @@ func (u *userService) Login(payload *model.LoginRequest) (model.Token, error) {
 	token.RefreshToken = refreshToken
 
 	return token, nil
+}
+
+func (u *userService) Register(payload *model.RegisterRequest) (model.RegisteredUser, error) {
+	registeredUser := model.RegisteredUser{}
+
+	err := u.validate.Struct(payload)
+	if err != nil {
+		return registeredUser, err
+	}
+
+	matched := util.ValidatePassword(payload.Password)
+	if !matched {
+		errMsg := "password must be at least 8 characters, one number, one uppercase letter, and one lowercase letter"
+		return registeredUser, &exception.CustomError{StatusCode: 400, Err: errors.New(errMsg)}
+	}
+
+	passwordHashed, _ := bcrypt.GenerateFromPassword([]byte(payload.Password), 10)
+	user := model.User{
+		ID:       uuid.NewString(),
+		Name:     payload.Name,
+		Email:    payload.Email,
+		Password: string(passwordHashed),
+		Role:     util.CommonConst.Roles.Admin,
+		Status:   util.CommonConst.Status.NotVerified,
+	}
+
+	_, err = u.repository.GetByEmail(payload.Email)
+	if err == nil {
+		return registeredUser, &exception.CustomError{StatusCode: 400, Err: errors.New("user already registered")}
+	}
+
+	err = u.repository.CreateUser(&user)
+	if err != nil {
+		return registeredUser, err
+	}
+
+	accessToken, err := util.GenerateAccessToken(&model.PayloadAccessToken{ID: user.ID, Email: user.Email, Role: user.Role})
+	refreshToken, err := util.GenerateRefreshToken(&model.PayloadRefreshToken{ID: user.ID, Email: user.Email})
+	if err != nil {
+		return registeredUser, err
+	}
+
+	registeredUser = model.RegisteredUser{
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Role:      user.Role,
+		Status:    user.Status,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Token: model.Token{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
+	}
+
+	return registeredUser, nil
 }
