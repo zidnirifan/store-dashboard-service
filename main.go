@@ -9,12 +9,14 @@ import (
 	"store-dashboard-service/db/postgres"
 	"store-dashboard-service/repository"
 	"store-dashboard-service/service"
+
+	"github.com/go-playground/validator/v10"
 )
 
 func main() {
 	db := postgres.OpenConnection()
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
+	userService := service.NewUserService(userRepository, validator.New())
 	userHandler := handler.NewUserHandler(userService)
 	userRoutes := route.NewUserRoute(*userHandler)
 	server := api.NewServer(userRoutes)

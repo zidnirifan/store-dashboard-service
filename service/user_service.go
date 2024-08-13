@@ -7,23 +7,31 @@ import (
 	"store-dashboard-service/util"
 	"store-dashboard-service/util/exception"
 
+	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userService struct {
 	repository repository.UserRepository
+	validate   *validator.Validate
 }
 
 type UserService interface {
 	Login(payload *model.LoginRequest) (model.Token, error)
 }
 
-func NewUserService(repository repository.UserRepository) *userService {
-	return &userService{repository: repository}
+func NewUserService(repository repository.UserRepository, validate *validator.Validate) *userService {
+	return &userService{repository: repository, validate: validate}
 }
 
 func (u *userService) Login(payload *model.LoginRequest) (model.Token, error) {
 	token := model.Token{}
+
+	err := u.validate.Struct(payload)
+	if err != nil {
+		return token, err
+	}
+
 	user, err := u.repository.GetByEmail(payload.Email)
 	if err != nil {
 		return token, &exception.CustomError{StatusCode: 404, Err: errors.New("user not found")}

@@ -7,12 +7,13 @@ import (
 	"store-dashboard-service/util/exception"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var userRepository = new(mocks.UserRepository)
-var userServiceTest = NewUserService(userRepository)
+var userServiceTest = NewUserService(userRepository, validator.New())
 
 var passwordHashed, _ = bcrypt.GenerateFromPassword([]byte("password"), 10)
 var userFromDB = model.User{
@@ -36,6 +37,19 @@ func TestLogin(t *testing.T) {
 		assert.NotEmpty(t, res.AccessToken)
 		assert.NotEmpty(t, res.RefreshToken)
 		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return validation error when payload invalid", func(t *testing.T) {
+		user := model.LoginRequest{
+			Email: "user",
+		}
+
+		res, err := userServiceTest.Login(&user)
+
+		assert.NotNil(t, err)
+		assert.Empty(t, res.AccessToken)
+		assert.Empty(t, res.RefreshToken)
+		assert.IsType(t, validator.ValidationErrors{}, err)
 	})
 
 	t.Run("it should return error 404 when user not found", func(t *testing.T) {
