@@ -20,6 +20,7 @@ type userService struct {
 type UserService interface {
 	Login(payload *model.LoginRequest) (model.Token, error)
 	Register(payload *model.RegisterRequest) (model.RegisteredUser, error)
+	VerifyUser(userId string) error
 }
 
 func NewUserService(repository repository.UserRepository, validate *validator.Validate) *userService {
@@ -111,4 +112,20 @@ func (u *userService) Register(payload *model.RegisterRequest) (model.Registered
 	}
 
 	return registeredUser, nil
+}
+
+func (u *userService) VerifyUser(userId string) error {
+	user, err := u.repository.GetById(userId)
+	if err != nil {
+		return &exception.CustomError{StatusCode: 404, Err: errors.New("user not found")}
+	}
+
+	if user.Status == util.CommonConst.Status.Active {
+		return &exception.CustomError{StatusCode: 400, Err: errors.New("user already verified")}
+	}
+
+	user.Status = util.CommonConst.Status.Active
+	err = u.repository.Update(user)
+
+	return err
 }

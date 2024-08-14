@@ -59,6 +59,52 @@ func (_m *UserRepository) GetByEmail(email string) (model.User, error) {
 	return r0, r1
 }
 
+// GetById provides a mock function with given fields: id
+func (_m *UserRepository) GetById(id string) (model.User, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetById")
+	}
+
+	var r0 model.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (model.User, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) model.User); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(model.User)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Update provides a mock function with given fields: user
+func (_m *UserRepository) Update(user model.User) error {
+	ret := _m.Called(user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(model.User) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewUserRepository creates a new instance of UserRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserRepository(t interface {

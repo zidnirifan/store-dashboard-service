@@ -4,6 +4,7 @@ import (
 	"errors"
 	"store-dashboard-service/model"
 	"store-dashboard-service/repository/mocks"
+	"store-dashboard-service/util"
 	"store-dashboard-service/util/exception"
 	"testing"
 
@@ -173,6 +174,47 @@ func TestRegister(t *testing.T) {
 
 		assert.NotNil(t, err)
 		assert.Empty(t, registeredUser)
+		userRepository.AssertExpectations(t)
+	})
+}
+
+func TestVerifyUser(t *testing.T) {
+	t.Run("it should success", func(t *testing.T) {
+		userId := "user-1"
+
+		userService, userRepository := newUserServiceWithMock()
+		userRepository.On("GetById", userId).Return(userFromDB, nil)
+		userRepository.On("Update", mock.Anything).Return(nil)
+
+		err := userService.VerifyUser(userId)
+
+		assert.Nil(t, err)
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return error 404 when user not found", func(t *testing.T) {
+		userId := "user-1"
+
+		userService, userRepository := newUserServiceWithMock()
+		userRepository.On("GetById", userId).Return(model.User{}, errors.New("not found"))
+
+		err := userService.VerifyUser(userId)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, 404, err.(*exception.CustomError).StatusCode)
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return error 400 when user already verified", func(t *testing.T) {
+		userId := "user-1"
+
+		userService, userRepository := newUserServiceWithMock()
+		userRepository.On("GetById", userId).Return(model.User{Status: util.CommonConst.Status.Active}, nil)
+
+		err := userService.VerifyUser(userId)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, 400, err.(*exception.CustomError).StatusCode)
 		userRepository.AssertExpectations(t)
 	})
 }

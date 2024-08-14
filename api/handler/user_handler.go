@@ -52,3 +52,17 @@ func (handler *UserHandler) Register(c *fiber.Ctx) error {
 		Data:    res,
 	})
 }
+
+func (handler *UserHandler) VerifyUser(c *fiber.Ctx) error {
+	userId := c.Params("userId")
+
+	err := handler.userService.VerifyUser(userId)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(model.Response{
+		Message: "user verified successfully",
+		Success: true,
+	})
+}

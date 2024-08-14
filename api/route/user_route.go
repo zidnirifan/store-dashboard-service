@@ -2,6 +2,7 @@ package route
 
 import (
 	"store-dashboard-service/api/handler"
+	"store-dashboard-service/api/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,4 +18,5 @@ func NewUserRoute(handler handler.UserHandler) *UserRoute {
 func (userRoute *UserRoute) Init(router fiber.Router) {
 	router.Post("/login", userRoute.handler.Login)
 	router.Post("/register", userRoute.handler.Register)
+	router.Put("/verify/:userId", middleware.SuperAdminAuth(), userRoute.handler.VerifyUser)
 }

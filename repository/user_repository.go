@@ -13,6 +13,8 @@ type userRepository struct {
 type UserRepository interface {
 	GetByEmail(email string) (model.User, error)
 	CreateUser(user *model.User) error
+	GetById(id string) (model.User, error)
+	Update(user model.User) error
 }
 
 func NewUserRepository(db *gorm.DB) *userRepository {
@@ -29,4 +31,16 @@ func (u *userRepository) GetByEmail(email string) (model.User, error) {
 
 func (u *userRepository) CreateUser(user *model.User) error {
 	return u.db.Create(&user).Error
+}
+
+func (u *userRepository) GetById(id string) (model.User, error) {
+	user := model.User{}
+
+	err := u.db.Take(&user, "id = ?", id).Error
+
+	return user, err
+}
+
+func (u *userRepository) Update(user model.User) error {
+	return u.db.Save(&user).Error
 }
