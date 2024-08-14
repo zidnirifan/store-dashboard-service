@@ -28,6 +28,7 @@ var userFromDB = model.User{
 	ID:       "123",
 	Email:    "test@mail.com",
 	Password: string(passwordHashed),
+	Status:   util.CommonConst.Active,
 }
 
 func TestLogin(t *testing.T) {
@@ -37,9 +38,10 @@ func TestLogin(t *testing.T) {
 			Password: "password",
 		}
 
+		userService, userRepository := newUserServiceWithMock()
 		userRepository.On("GetByEmail", user.Email).Return(userFromDB, nil)
 
-		res, err := userServiceTest.Login(&user)
+		res, err := userService.Login(&user)
 
 		assert.Nil(t, err)
 		assert.NotEmpty(t, res.AccessToken)
@@ -66,9 +68,10 @@ func TestLogin(t *testing.T) {
 			Password: "password",
 		}
 
+		userService, userRepository := newUserServiceWithMock()
 		userRepository.On("GetByEmail", user.Email).Return(model.User{}, errors.New("error"))
 
-		res, err := userServiceTest.Login(&user)
+		res, err := userService.Login(&user)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, 404, err.(*exception.CustomError).StatusCode)
@@ -83,9 +86,28 @@ func TestLogin(t *testing.T) {
 			Password: "wrong_password",
 		}
 
+		userService, userRepository := newUserServiceWithMock()
 		userRepository.On("GetByEmail", user.Email).Return(userFromDB, nil)
 
-		res, err := userServiceTest.Login(&user)
+		res, err := userService.Login(&user)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, 403, err.(*exception.CustomError).StatusCode)
+		assert.Empty(t, res.AccessToken)
+		assert.Empty(t, res.RefreshToken)
+		userRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return error 403 when user status not active", func(t *testing.T) {
+		user := model.LoginRequest{
+			Email:    "user@mail.com",
+			Password: "password",
+		}
+
+		userService, userRepository := newUserServiceWithMock()
+		userRepository.On("GetByEmail", user.Email).Return(model.User{Status: util.CommonConst.NotVerified}, nil)
+
+		res, err := userService.Login(&user)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, 403, err.(*exception.CustomError).StatusCode)
@@ -183,7 +205,7 @@ func TestVerifyUser(t *testing.T) {
 		userId := "user-1"
 
 		userService, userRepository := newUserServiceWithMock()
-		userRepository.On("GetById", userId).Return(userFromDB, nil)
+		userRepository.On("GetById", userId).Return(model.User{Status: util.CommonConst.Status.NotVerified}, nil)
 		userRepository.On("Update", mock.Anything).Return(nil)
 
 		err := userService.VerifyUser(userId)
@@ -209,7 +231,7 @@ func TestVerifyUser(t *testing.T) {
 		userId := "user-1"
 
 		userService, userRepository := newUserServiceWithMock()
-		userRepository.On("GetById", userId).Return(model.User{Status: util.CommonConst.Status.Active}, nil)
+		userRepository.On("GetById", userId).Return(userFromDB, nil)
 
 		err := userService.VerifyUser(userId)
 

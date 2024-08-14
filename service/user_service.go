@@ -39,6 +39,9 @@ func (u *userService) Login(payload *model.LoginRequest) (model.Token, error) {
 	if err != nil {
 		return token, &exception.CustomError{StatusCode: 404, Err: errors.New("user not found")}
 	}
+	if user.Status != util.CommonConst.Status.Active {
+		return token, &exception.CustomError{StatusCode: 403, Err: errors.New("user not activated")}
+	}
 
 	passwordMatchErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if passwordMatchErr != nil {
