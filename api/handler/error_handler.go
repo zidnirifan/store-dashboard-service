@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"store-dashboard-service/model"
 	"store-dashboard-service/util/exception"
+	"store-dashboard-service/util/log"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -26,6 +27,7 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 		})
 	}
 
+	log.GetLogger().Error("ErrorHandler", "Internal Server Error", err)
 	return c.Status(http.StatusInternalServerError).JSON(model.Response{
 		Message: err.Error(),
 		Success: false,

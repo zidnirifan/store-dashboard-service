@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"regexp"
+	"store-dashboard-service/util/log"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
@@ -29,14 +30,19 @@ var config Config
 
 func init() {
 	projectName := "store-dashboard-service"
+	ctxScope := "init_config"
 
 	err := godotenv.Load()
 	if err != nil {
 		// load env for testing
+		log.GetLogger().Info(ctxScope, "load env from current working directory", nil)
 		re := regexp.MustCompile(`^(.*` + projectName + `)`)
 		cwd, _ := os.Getwd()
 		rootPath := re.Find([]byte(cwd))
-		godotenv.Load(string(rootPath) + "/.env.test")
+		err = godotenv.Load(string(rootPath) + "/.env.test")
+		if err != nil {
+			log.GetLogger().Error(ctxScope, "failed to load env", err)
+		}
 	}
 	viper.AutomaticEnv()
 

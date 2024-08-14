@@ -3,6 +3,7 @@ package postgres
 import (
 	"fmt"
 	"store-dashboard-service/config"
+	"store-dashboard-service/util/log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -22,6 +23,7 @@ func OpenConnection() *gorm.DB {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
+		log.GetLogger().Error("postgres_connection", "error connect to postgres", err)
 		panic(err)
 	}
 
