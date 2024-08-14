@@ -94,12 +94,6 @@ func (u *userService) Register(payload *model.RegisterRequest) (model.Registered
 		return registeredUser, err
 	}
 
-	accessToken, err := util.GenerateAccessToken(&model.PayloadAccessToken{ID: user.ID, Email: user.Email, Role: user.Role})
-	refreshToken, err := util.GenerateRefreshToken(&model.PayloadRefreshToken{ID: user.ID, Email: user.Email})
-	if err != nil {
-		return registeredUser, err
-	}
-
 	registeredUser = model.RegisteredUser{
 		ID:        user.ID,
 		Name:      user.Name,
@@ -107,11 +101,6 @@ func (u *userService) Register(payload *model.RegisterRequest) (model.Registered
 		Role:      user.Role,
 		Status:    user.Status,
 		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		Token: model.Token{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-		},
 	}
 
 	return registeredUser, nil

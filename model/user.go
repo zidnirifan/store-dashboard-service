@@ -57,6 +57,4 @@ type RegisteredUser struct {
 	Role      string    `json:"role"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	Token     Token     `json:"token"`
 }
