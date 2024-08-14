@@ -5,6 +5,7 @@ import (
 	"store-dashboard-service/api/route"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
 )
 
@@ -13,6 +14,8 @@ func NewServer(userRoute *route.UserRoute) *fiber.App {
 		AppName:      "store-dashboard-service",
 		ErrorHandler: handler.ErrorHandler,
 	})
+
+	app.Use(logger.New())
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello World")
