@@ -2,6 +2,7 @@ package api
 
 import (
 	"store-dashboard-service/api/handler"
+	"store-dashboard-service/api/middleware"
 	"store-dashboard-service/api/route"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,7 +39,7 @@ func NewServer(route *Route) *fiber.App {
 	userRouter := app.Group("/users")
 	route.UserRoute.Init(userRouter)
 
-	categoryRouter := app.Group("/categories")
+	categoryRouter := app.Group("/categories", middleware.AdminAuth())
 	route.CategoryRoute.Init(categoryRouter)
 
 	return app
