@@ -34,3 +34,14 @@ func (c *CategoryService) CreateCategory(payload *model.CreateCategoryRequest) (
 
 	return category, nil
 }
+
+func (c *CategoryService) GetCategories() ([]model.Category, error) {
+	var categories []model.Category
+
+	err := c.repository.GetAll(&categories)
+	if err != nil {
+		return categories, err
+	}
+
+	return categories, nil
+}

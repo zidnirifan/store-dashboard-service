@@ -33,3 +33,16 @@ func (ch *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
 		Data:    category,
 	})
 }
+
+func (ch *CategoryHandler) GetCategories(c *fiber.Ctx) error {
+	categories, err := ch.service.GetCategories()
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(model.Response{
+		Success: true,
+		Message: "success get categories",
+		Data:    categories,
+	})
+}

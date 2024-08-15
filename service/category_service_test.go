@@ -17,6 +17,11 @@ func newCategoryServiceWithMock() (*CategoryService, *mocks.CategoryRepository) 
 	return categoryService, categoryRepository
 }
 
+var categoryFromDB = model.Category{
+	ID:   1,
+	Name: "test",
+}
+
 func TestCreateCategory(t *testing.T) {
 	t.Run("it should success", func(t *testing.T) {
 		payload := model.CreateCategoryRequest{
@@ -42,6 +47,32 @@ func TestCreateCategory(t *testing.T) {
 		categoryRepository.On("Create", mock.Anything).Return(errors.New("error"))
 
 		_, err := categoryService.CreateCategory(&payload)
+
+		assert.NotNil(t, err)
+		categoryRepository.AssertExpectations(t)
+	})
+}
+
+func TestGetCategories(t *testing.T) {
+	t.Run("it should success", func(t *testing.T) {
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetAll", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+			arg := args.Get(0).(*[]model.Category)
+			*arg = append(*arg, categoryFromDB)
+		})
+
+		categories, err := categoryService.GetCategories()
+
+		assert.Nil(t, err)
+		assert.NotEmpty(t, categories)
+		categoryRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return error", func(t *testing.T) {
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetAll", mock.Anything).Return(errors.New("error"))
+
+		_, err := categoryService.GetCategories()
 
 		assert.NotNil(t, err)
 		categoryRepository.AssertExpectations(t)

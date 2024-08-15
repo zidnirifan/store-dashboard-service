@@ -31,6 +31,24 @@ func (_m *CategoryRepository) Create(category *model.Category) error {
 	return r0
 }
 
+// GetAll provides a mock function with given fields: categories
+func (_m *CategoryRepository) GetAll(categories *[]model.Category) error {
+	ret := _m.Called(categories)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAll")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*[]model.Category) error); ok {
+		r0 = rf(categories)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewCategoryRepository creates a new instance of CategoryRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewCategoryRepository(t interface {
