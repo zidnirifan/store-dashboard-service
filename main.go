@@ -18,7 +18,7 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository, validator.New())
 	userHandler := handler.NewUserHandler(userService)
-	userRoutes := route.NewUserRoute(*userHandler)
+	userRoutes := route.NewUserRoute(userHandler)
 	server := api.NewServer(userRoutes)
 
 	server.Listen(fmt.Sprintf(":%d", config.GetConfig().Port))

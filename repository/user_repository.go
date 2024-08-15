@@ -14,7 +14,7 @@ type UserRepository interface {
 	GetByEmail(email string) (model.User, error)
 	CreateUser(user *model.User) error
 	GetById(id string) (model.User, error)
-	Update(user model.User) error
+	Update(user *model.User) error
 }
 
 func NewUserRepository(db *gorm.DB) *userRepository {
@@ -41,6 +41,6 @@ func (u *userRepository) GetById(id string) (model.User, error) {
 	return user, err
 }
 
-func (u *userRepository) Update(user model.User) error {
-	return u.db.Save(&user).Error
+func (u *userRepository) Update(user *model.User) error {
+	return u.db.Save(user).Error
 }

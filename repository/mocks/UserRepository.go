@@ -88,7 +88,7 @@ func (_m *UserRepository) GetById(id string) (model.User, error) {
 }
 
 // Update provides a mock function with given fields: user
-func (_m *UserRepository) Update(user model.User) error {
+func (_m *UserRepository) Update(user *model.User) error {
 	ret := _m.Called(user)
 
 	if len(ret) == 0 {
@@ -96,7 +96,7 @@ func (_m *UserRepository) Update(user model.User) error {
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(model.User) error); ok {
+	if rf, ok := ret.Get(0).(func(*model.User) error); ok {
 		r0 = rf(user)
 	} else {
 		r0 = ret.Error(0)

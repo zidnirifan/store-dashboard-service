@@ -117,7 +117,7 @@ func (u *userService) VerifyUser(userId string) error {
 	}
 
 	user.Status = util.CommonConst.Status.Active
-	err = u.repository.Update(user)
+	err = u.repository.Update(&user)
 
 	return err
 }

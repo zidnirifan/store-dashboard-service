@@ -8,10 +8,10 @@ import (
 )
 
 type UserRoute struct {
-	handler handler.UserHandler
+	handler *handler.UserHandler
 }
 
-func NewUserRoute(handler handler.UserHandler) *UserRoute {
+func NewUserRoute(handler *handler.UserHandler) *UserRoute {
 	return &UserRoute{handler: handler}
 }
 
