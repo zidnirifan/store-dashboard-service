@@ -58,7 +58,7 @@ func (ch *CategoryHandler) GetCategoryById(c *fiber.Ctx) error {
 		})
 	}
 
-	categories, err := ch.service.GetCategoryById(id)
+	category, err := ch.service.GetCategoryById(id)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func (ch *CategoryHandler) GetCategoryById(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(model.Response{
 		Success: true,
 		Message: "success get category",
-		Data:    categories,
+		Data:    category,
 	})
 }
 
