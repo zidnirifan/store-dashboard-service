@@ -16,10 +16,22 @@ import (
 func main() {
 	db := postgres.OpenConnection()
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository, validator.New())
+	categoryRepository := repository.NewCategoryRepository(db)
+
+	validate := validator.New()
+	userService := service.NewUserService(userRepository, validate)
+	categoryService := service.NewCategoryService(categoryRepository, validate)
+
 	userHandler := handler.NewUserHandler(userService)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
+
 	userRoutes := route.NewUserRoute(userHandler)
-	server := api.NewServer(userRoutes)
+	categoryRoute := route.NewCategoryRoute(categoryHandler)
+	route := api.Route{
+		UserRoute:     userRoutes,
+		CategoryRoute: categoryRoute,
+	}
+	server := api.NewServer(&route)
 
 	server.Listen(fmt.Sprintf(":%d", config.GetConfig().Port))
 }

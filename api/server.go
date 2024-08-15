@@ -10,7 +10,12 @@ import (
 	"github.com/gofiber/swagger"
 )
 
-func NewServer(userRoute *route.UserRoute) *fiber.App {
+type Route struct {
+	UserRoute     *route.UserRoute
+	CategoryRoute *route.CategoryRoute
+}
+
+func NewServer(route *Route) *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName:      "store-dashboard-service",
 		ErrorHandler: handler.ErrorHandler,
@@ -31,7 +36,10 @@ func NewServer(userRoute *route.UserRoute) *fiber.App {
 	}))
 
 	userRouter := app.Group("/users")
-	userRoute.Init(userRouter)
+	route.UserRoute.Init(userRouter)
+
+	categoryRouter := app.Group("/categories")
+	route.CategoryRoute.Init(categoryRouter)
 
 	return app
 }
