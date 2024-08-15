@@ -17,4 +17,5 @@ func NewCategoryRoute(handler *handler.CategoryHandler) *CategoryRoute {
 func (categoryRoute *CategoryRoute) Init(router fiber.Router) {
 	router.Post("/", categoryRoute.handler.CreateCategory)
 	router.Get("/", categoryRoute.handler.GetCategories)
+	router.Get("/:id", categoryRoute.handler.GetCategoryById)
 }

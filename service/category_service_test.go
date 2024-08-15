@@ -4,6 +4,7 @@ import (
 	"errors"
 	"store-dashboard-service/model"
 	"store-dashboard-service/repository/mocks"
+	"store-dashboard-service/util/exception"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
@@ -75,6 +76,31 @@ func TestGetCategories(t *testing.T) {
 		_, err := categoryService.GetCategories()
 
 		assert.NotNil(t, err)
+		categoryRepository.AssertExpectations(t)
+	})
+}
+
+func TestGetCategoryById(t *testing.T) {
+	t.Run("it should success", func(t *testing.T) {
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetById", mock.Anything).Return(categoryFromDB, nil)
+
+		category, err := categoryService.GetCategoryById(1)
+
+		assert.Nil(t, err)
+		assert.NotEmpty(t, category)
+		categoryRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return 404 error", func(t *testing.T) {
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetById", mock.Anything).Return(model.Category{}, errors.New("error"))
+
+		category, err := categoryService.GetCategoryById(11)
+
+		assert.NotNil(t, err)
+		assert.Empty(t, category)
+		assert.Equal(t, 404, err.(*exception.CustomError).StatusCode)
 		categoryRepository.AssertExpectations(t)
 	})
 }

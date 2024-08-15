@@ -3,6 +3,7 @@ package handler
 import (
 	"store-dashboard-service/model"
 	"store-dashboard-service/service"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -43,6 +44,28 @@ func (ch *CategoryHandler) GetCategories(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(model.Response{
 		Success: true,
 		Message: "success get categories",
+		Data:    categories,
+	})
+}
+
+func (ch *CategoryHandler) GetCategoryById(c *fiber.Ctx) error {
+	idString := c.Params("id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(model.Response{
+			Success: false,
+			Message: "category not found",
+		})
+	}
+
+	categories, err := ch.service.GetCategoryById(id)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(model.Response{
+		Success: true,
+		Message: "success get category",
 		Data:    categories,
 	})
 }

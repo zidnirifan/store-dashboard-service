@@ -1,8 +1,10 @@
 package service
 
 import (
+	"errors"
 	"store-dashboard-service/model"
 	"store-dashboard-service/repository"
+	"store-dashboard-service/util/exception"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -44,4 +46,13 @@ func (c *CategoryService) GetCategories() ([]model.Category, error) {
 	}
 
 	return categories, nil
+}
+
+func (c *CategoryService) GetCategoryById(id int) (model.Category, error) {
+	category, err := c.repository.GetById(id)
+	if err != nil {
+		return category, &exception.CustomError{StatusCode: 404, Err: errors.New("category not found")}
+	}
+
+	return category, nil
 }
