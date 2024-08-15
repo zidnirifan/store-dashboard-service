@@ -104,3 +104,62 @@ func TestGetCategoryById(t *testing.T) {
 		categoryRepository.AssertExpectations(t)
 	})
 }
+
+func TestUpdateCategory(t *testing.T) {
+	t.Run("it should success", func(t *testing.T) {
+		payload := model.UpdateCategoryRequest{
+			Name: "test edit",
+		}
+
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetById", mock.Anything).Return(categoryFromDB, nil)
+		categoryRepository.On("Update", mock.Anything).Return(nil)
+
+		category, err := categoryService.UpdateCategory(1, &payload)
+
+		assert.Nil(t, err)
+		assert.NotEmpty(t, category)
+		categoryRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return 404 error", func(t *testing.T) {
+		payload := model.UpdateCategoryRequest{
+			Name: "test edit",
+		}
+
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetById", mock.Anything).Return(model.Category{}, errors.New("error"))
+
+		category, err := categoryService.UpdateCategory(11, &payload)
+
+		assert.NotNil(t, err)
+		assert.Empty(t, category)
+		assert.Equal(t, 404, err.(*exception.CustomError).StatusCode)
+		categoryRepository.AssertExpectations(t)
+	})
+}
+
+func TestDeleteCategoryById(t *testing.T) {
+	t.Run("it should success", func(t *testing.T) {
+
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetById", mock.Anything).Return(categoryFromDB, nil)
+		categoryRepository.On("DeleteById", mock.Anything).Return(nil)
+
+		err := categoryService.DeleteCategoryById(1)
+
+		assert.Nil(t, err)
+		categoryRepository.AssertExpectations(t)
+	})
+
+	t.Run("it should return 404 error", func(t *testing.T) {
+		categoryService, categoryRepository := newCategoryServiceWithMock()
+		categoryRepository.On("GetById", mock.Anything).Return(model.Category{}, errors.New("error"))
+
+		err := categoryService.DeleteCategoryById(11)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, 404, err.(*exception.CustomError).StatusCode)
+		categoryRepository.AssertExpectations(t)
+	})
+}

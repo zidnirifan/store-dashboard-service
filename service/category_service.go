@@ -56,3 +56,26 @@ func (c *CategoryService) GetCategoryById(id int) (model.Category, error) {
 
 	return category, nil
 }
+
+func (c *CategoryService) UpdateCategory(id int, payload *model.UpdateCategoryRequest) (model.Category, error) {
+	category, err := c.repository.GetById(id)
+	if err != nil {
+		return category, &exception.CustomError{StatusCode: 404, Err: errors.New("category not found")}
+	}
+
+	category.Name = payload.Name
+	err = c.repository.Update(&category)
+
+	return category, nil
+}
+
+func (c *CategoryService) DeleteCategoryById(id int) error {
+	_, err := c.repository.GetById(id)
+	if err != nil {
+		return &exception.CustomError{StatusCode: 404, Err: errors.New("category not found")}
+	}
+
+	err = c.repository.DeleteById(id)
+
+	return nil
+}

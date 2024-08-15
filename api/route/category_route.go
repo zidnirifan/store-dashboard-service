@@ -18,4 +18,6 @@ func (categoryRoute *CategoryRoute) Init(router fiber.Router) {
 	router.Post("/", categoryRoute.handler.CreateCategory)
 	router.Get("/", categoryRoute.handler.GetCategories)
 	router.Get("/:id", categoryRoute.handler.GetCategoryById)
+	router.Put("/:id", categoryRoute.handler.UpdateCategory)
+	router.Delete("/:id", categoryRoute.handler.DeleteCategory)
 }

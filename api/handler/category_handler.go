@@ -69,3 +69,51 @@ func (ch *CategoryHandler) GetCategoryById(c *fiber.Ctx) error {
 		Data:    categories,
 	})
 }
+
+func (ch *CategoryHandler) UpdateCategory(c *fiber.Ctx) error {
+	idString := c.Params("id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(model.Response{
+			Success: false,
+			Message: "category not found",
+		})
+	}
+	body := &model.UpdateCategoryRequest{}
+	err = c.BodyParser(body)
+	if err != nil {
+		return err
+	}
+
+	category, err := ch.service.UpdateCategory(id, body)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(model.Response{
+		Success: true,
+		Message: "update category successfully",
+		Data:    category,
+	})
+}
+
+func (ch *CategoryHandler) DeleteCategory(c *fiber.Ctx) error {
+	idString := c.Params("id")
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(model.Response{
+			Success: false,
+			Message: "category not found",
+		})
+	}
+
+	err = ch.service.DeleteCategoryById(id)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(model.Response{
+		Success: true,
+		Message: "delete category successfully",
+	})
+}

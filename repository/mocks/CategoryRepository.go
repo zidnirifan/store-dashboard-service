@@ -31,6 +31,24 @@ func (_m *CategoryRepository) Create(category *model.Category) error {
 	return r0
 }
 
+// DeleteById provides a mock function with given fields: id
+func (_m *CategoryRepository) DeleteById(id int) error {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteById")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetAll provides a mock function with given fields: categories
 func (_m *CategoryRepository) GetAll(categories *[]model.Category) error {
 	ret := _m.Called(categories)
@@ -75,6 +93,24 @@ func (_m *CategoryRepository) GetById(id int) (model.Category, error) {
 	}
 
 	return r0, r1
+}
+
+// Update provides a mock function with given fields: category
+func (_m *CategoryRepository) Update(category *model.Category) error {
+	ret := _m.Called(category)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*model.Category) error); ok {
+		r0 = rf(category)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // NewCategoryRepository creates a new instance of CategoryRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
