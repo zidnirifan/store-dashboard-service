@@ -15,6 +15,7 @@ type Config struct {
 	PostgresDB      DBConfig
 	AccessTokenKey  string
 	RefreshTokenKey string
+	CloudinaryURL   string
 }
 
 type DBConfig struct {
@@ -59,6 +60,7 @@ func init() {
 		},
 		AccessTokenKey:  viper.GetString("ACCESS_TOKEN_KEY"),
 		RefreshTokenKey: viper.GetString("REFRESH_TOKEN_KEY"),
+		CloudinaryURL:   viper.GetString("CLOUDINARY_URL"),
 	}
 }
 

@@ -14,6 +14,7 @@ import (
 type Route struct {
 	UserRoute     *route.UserRoute
 	CategoryRoute *route.CategoryRoute
+	ProductRoute  *route.ProductRoute
 }
 
 func NewServer(route *Route) *fiber.App {
@@ -41,6 +42,9 @@ func NewServer(route *Route) *fiber.App {
 
 	categoryRouter := app.Group("/categories", middleware.AdminAuth())
 	route.CategoryRoute.Init(categoryRouter)
+
+	productRouter := app.Group("/products", middleware.AdminAuth())
+	route.ProductRoute.Init(productRouter)
 
 	return app
 }
